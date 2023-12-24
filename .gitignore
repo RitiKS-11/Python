@@ -1,0 +1,5 @@
+check_connection.egg-info
+build
+dist
+venv
+__pycache__
