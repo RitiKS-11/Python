@@ -9,9 +9,11 @@ class TestConnection(unittest.TestCase):
                          "Resutl should be connected.")
         
     def test_random_url(self):
-        response = check_connection('https://www.goog.com')
+        response = check_connection('https://github.com/RitiKS-11/Python')
         self.assertEqual( response, 'Not connected', \
                          'Result should be not connected.')
+        
+
         
 
 if __name__ == "__main__":
