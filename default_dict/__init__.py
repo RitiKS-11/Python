@@ -1,1 +1,1 @@
-from default_dict import default_dict
+from pkg import default_dict

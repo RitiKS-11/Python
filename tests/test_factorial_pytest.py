@@ -27,3 +27,4 @@ def test_false_factorial(number, expected_result):
 @pytest.mark.factorial
 def test_factorial_of_six(test_factorial_data):
     assert factorial(test_factorial_data) == 720, 'Should be 720'
+

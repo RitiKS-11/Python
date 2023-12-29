@@ -1,6 +1,6 @@
 import pytest
 
-from default_dict.default_dict import group_by_age, protein_fruit_source
+from pkg.default_dict import group_by_age, protein_fruit_source
 
 
 @pytest.fixture
@@ -64,3 +64,11 @@ def test_group_by_age(test_data):
     excepted_result = {25: ['Alice', 'Charlie', 'Eva'], 30: ['Bob', 'David', 'Frank']}
     assert group_by_age(test_data) == excepted_result
 
+
+if __name__ == "__main__":
+    test_group_by_age([("Alice", 25),
+        ("Bob", 30),
+        ("Charlie", 25),
+        ("David", 30),
+        ("Eva", 25),
+        ("Frank", 20)])
