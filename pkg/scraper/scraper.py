@@ -1,39 +1,44 @@
 from bs4 import BeautifulSoup
 import requests
 import json
+import csv
+from datetime import datetime
 
 
-def connect_daraz():
+def scrape(product):
     try:
-        response = requests.get('https://www.daraz.com.np/catalog/?q=snacks', headers = {'Accept': 'application/json'})
-
+        response = requests.get(f'https://www.daraz.com.np/catalog/?q={product}')
     except Exception as error:
         raise(error)
 
-    return response.text
+    return response
 
 
-def extract_data(res):
-    html_lines = res.split('window.pageData=')[1].split('</script')[0]
+def parse_content(res):
+    html_lines = res.text.split('window.pageData=')[1].split('</script')[0]
 
     products = json.loads(html_lines)['mods']['listItems']
     results = []
 
-    for product in products:
-        name = product['name']
-        price = product['utLogMap']['originalPrice']
-        product_url = product['productUrl']
+    with open(f'scrape_data_{datetime.today()}.csv', 'w') as file:
+        fieldnames = ['name', 'price', 'product_url', 'quantity']
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
+        writer.writeheader()
 
-        quantity = find_quantity(name)
-        
-        results.append({'name':name, 'price':price, 'product_url':product_url, 'quantity': quantity})
+        for product in products:
+            name = product['name']
+            price = product['utLogMap']['originalPrice']
+            product_url = product['productUrl']
 
-    results = filter_qunatity(results)
-    sort_asec(results)
+            quantity = parse_product_title(name)
+
+            writer.writerow({'name':name, 'price':price, 'product_url':product_url, 'quantity': quantity})
+            results.append({'name':name, 'price':price, 'product_url':product_url, 'quantity': quantity})
+
     return results
 
 
-def find_quantity(name):
+def parse_product_title(name):
     word_list = name.split(' ')
     last_word = word_list[-1]
 
@@ -74,32 +79,31 @@ def sort_dsec(results):
     return sorted_result_desc
 
 
-def get_product_detail():
-    try:
-        response = connect_daraz()
-        soup = BeautifulSoup(response.text, 'html.parser')
 
-        scripts = soup.find_all('script')
-        results = []
+# def get_product_detail():
+#     try:
+#         response = scrape()
+#         soup = BeautifulSoup(response.text, 'html.parser')
 
-        for script in scripts:
-            if 'window.pageData=' in script.text:
-                products = json.loads(script.text.replace('window.pageData=',''))
-                products = products["mods"]["listItems"]
-                break
+#         scripts = soup.find_all('script')
+#         results = []
 
-        for product in products:
-            name = product['name']
-            price = product['utLogMap']['originalPrice']
-            product_url = product['productUrl']
+#         for script in scripts:
+#             if 'window.pageData=' in script.text:
+#                 products = json.loads(script.text.replace('window.pageData=',''))
+#                 products = products["mods"]["listItems"]
+#                 break
 
-            results.append({'name':name, 'price':price, 'product_url':product_url})
-            break
+#         for product in products:
+#             name = product['name']
+#             price = product['utLogMap']['originalPrice']
+#             product_url = product['productUrl']
 
-        return results
+#             results.append({'name':name, 'price':price, 'product_url':product_url})
+#             break
+
+#         return results
     
-    except Exception as error:
-       raise error
+#     except Exception as error:
+#        raise error
 
-if __name__ == "__main__":
-    extract_data(res=connect_daraz())
