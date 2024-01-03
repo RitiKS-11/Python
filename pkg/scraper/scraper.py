@@ -14,13 +14,14 @@ def scrape(product):
     return response
 
 
-def parse_content(res):
+def parse_content(product):
+    res = scrape(product)
     html_lines = res.text.split('window.pageData=')[1].split('</script')[0]
 
     products = json.loads(html_lines)['mods']['listItems']
     results = []
 
-    with open(f'scrape_data_{datetime.today()}.csv', 'w') as file:
+    with open(f'scrape_data_{product}_{datetime.today()}.csv', 'w') as file:
         fieldnames = ['name', 'price', 'product_url', 'quantity']
         writer = csv.DictWriter(file, fieldnames=fieldnames)
         writer.writeheader()
@@ -48,6 +49,8 @@ def parse_product_title(name):
         else:
             if any(n.isdigit() for n in word_list[-2]):
                 return word_list[-2] + word_list[-1]
+            
+    return ''
             
 def filter_qunatity(results):
     for result in results:
@@ -107,3 +110,5 @@ def sort_dsec(results):
 #     except Exception as error:
 #        raise error
 
+if __name__ == "__main__":
+    parse_content('rice')
