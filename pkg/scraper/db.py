@@ -14,9 +14,7 @@ class Database:
         self.cur.execute("""
             INSERT INTO food_data (name, price, product_url, quantity) VALUES (?,?,?,?)
         """, (result['name'], result['price'], result['product_url'], result['quantity']))
-
         self.con.commit()
-
 
         return True
 
@@ -27,3 +25,6 @@ class Database:
         res.fetchall()
 
         return res
+
+    def close(self):
+        self.con.close
