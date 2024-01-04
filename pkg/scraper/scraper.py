@@ -21,23 +21,26 @@ def parse_content(product):
     products = json.loads(html_lines)['mods']['listItems']
     results = []
 
-    with open(f'scrape_data_{product}_{datetime.today()}.csv', 'w') as file:
+    for product in products:
+        name = product['name']
+        price = product['utLogMap']['originalPrice']
+        product_url = product['productUrl']
+
+        quantity = parse_product_title(name)
+
+        results.append({'name':name, 'price':price, 'product_url':product_url, 'quantity': quantity})
+
+    store_parse_data(results)
+    return results
+
+def store_parse_data(results):
+    with open(f'scrape_data_{datetime.today()}.csv', 'w') as file:
         fieldnames = ['name', 'price', 'product_url', 'quantity']
         writer = csv.DictWriter(file, fieldnames=fieldnames)
         writer.writeheader()
 
-        for product in products:
-            name = product['name']
-            price = product['utLogMap']['originalPrice']
-            product_url = product['productUrl']
-
-            quantity = parse_product_title(name)
-
-            writer.writerow({'name':name, 'price':price, 'product_url':product_url, 'quantity': quantity})
-            results.append({'name':name, 'price':price, 'product_url':product_url, 'quantity': quantity})
-
-    return results
-
+        for result in results:
+            writer.writerow(result)
 
 def parse_product_title(name):
     word_list = name.split(' ')
@@ -110,5 +113,3 @@ def sort_dsec(results):
 #     except Exception as error:
 #        raise error
 
-if __name__ == "__main__":
-    parse_content('rice')
