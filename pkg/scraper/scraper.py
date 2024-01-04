@@ -4,6 +4,7 @@ import json
 import csv
 from datetime import datetime
 
+from db import Database
 
 def scrape(product):
     try:
@@ -29,11 +30,10 @@ def parse_content(product):
         quantity = parse_product_title(name)
 
         results.append({'name':name, 'price':price, 'product_url':product_url, 'quantity': quantity})
-
-    store_parse_data(results)
     return results
 
-def store_parse_data(results):
+
+def store_csv(results):
     with open(f'scrape_data_{datetime.today()}.csv', 'w') as file:
         fieldnames = ['name', 'price', 'product_url', 'quantity']
         writer = csv.DictWriter(file, fieldnames=fieldnames)
@@ -41,6 +41,13 @@ def store_parse_data(results):
 
         for result in results:
             writer.writerow(result)
+
+
+def store_sql(results):
+    db = Database()
+    for result in results:
+        r = db.insert(result)
+
 
 def parse_product_title(name):
     word_list = name.split(' ')
@@ -52,7 +59,6 @@ def parse_product_title(name):
         else:
             if any(n.isdigit() for n in word_list[-2]):
                 return word_list[-2] + word_list[-1]
-            
     return ''
             
 def filter_qunatity(results):
@@ -70,19 +76,25 @@ def filter_qunatity(results):
                 result['quantity'] = int(result['quantity'])
         else:
             result['quantity'] = 0
-            
     return results
+
 
 def sort_asec(results):
     sorted_result_asec = sorted(results, key=lambda x: x.get('quantity', float('inf')))
     return sorted_result_asec
 
-    
-
 
 def sort_dsec(results):
     sorted_result_desc = sorted(results, reverse=True, key=lambda x: x.get('quantity', float('inf')))
     return sorted_result_desc
+
+
+def main():
+    results = parse_content('rice')
+    store_sql(results)
+
+
+
 
 
 
