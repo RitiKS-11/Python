@@ -4,7 +4,7 @@ import json
 import csv
 from datetime import datetime
 
-from db import Database
+from pkg.scraper.db import Database
 
 def scrape(product):
     try:
@@ -32,14 +32,20 @@ def parse_content(res):
     return results
 
 
-def store_csv(results):
-    with open(f'scrape_data_{datetime.today()}.csv', 'w') as file:
-        fieldnames = ['name', 'price', 'product_url', 'quantity']
-        writer = csv.DictWriter(file, fieldnames=fieldnames)
-        writer.writeheader()
+def store_csv(results, product):
+    try:
+        with open(f'{product}.csv', 'w') as file:
+            fieldnames = ['name', 'price', 'product_url', 'quantity']
+            writer = csv.DictWriter(file, fieldnames=fieldnames)
+            writer.writeheader()
 
-        for result in results:
-            writer.writerow(result)
+            for result in results:
+                writer.writerow(result)
+
+        return True
+
+    except Exception as error:
+        raise error
 
 
 def store_sql(results):
@@ -89,10 +95,18 @@ def sort_dsec(results):
     return sorted_result_desc
 
 
-def main():
-    res = scrape('rice')
-    results = parse_content(res)
-    store_sql(results)
+def extract_info(product):
+    try:
+        res = scrape(product)
+        results = parse_content(res)
+        store_csv(results, product)
+
+        return True
+    
+    except Exception as error:
+        raise error
+
+
 
 
 
