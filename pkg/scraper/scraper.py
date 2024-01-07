@@ -15,8 +15,7 @@ def scrape(product):
     return response
 
 
-def parse_content(product):
-    res = scrape(product)
+def parse_content(res):
     html_lines = res.text.split('window.pageData=')[1].split('</script')[0]
 
     products = json.loads(html_lines)['mods']['listItems']
@@ -47,6 +46,7 @@ def store_sql(results):
     db = Database()
     for result in results:
         r = db.insert(result)
+    db.close()
 
 
 def parse_product_title(name):
@@ -90,7 +90,8 @@ def sort_dsec(results):
 
 
 def main():
-    results = parse_content('rice')
+    res = scrape('rice')
+    results = parse_content(res)
     store_sql(results)
 
 
