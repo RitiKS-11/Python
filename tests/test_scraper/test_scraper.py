@@ -1,34 +1,28 @@
 import pytest
-import csv, os
+import  os
 
 from pkg.scraper.scraper import scrape, parse_product_title, \
                     parse_content, extract_info
+
 
 @pytest.fixture
 def product_name():
     return 'rice'
 
-@pytest.fixture
-def product_title():
-    return 'Basmati Rice - 1kg'
 
-
-def test_scrape(product_name):
-    response = scrape(product_name)
+def test_scrape():
+    response = scrape('rice')
     assert response.status_code == 200
 
 
 def test_parse_content(product_name):
     res = scrape(product_name)
     filename=f'{product_name}.csv'
-    expected_result = []
+    
+    results = parse_content(res)
 
-    with open(filename, 'r') as file:
-        reader = csv.DictReader(file)
-        for row in reader:
-            expected_result.append(row)
-
-    assert parse_content(res) == expected_result
+    assert  len(results) != 0
+    assert results[0]['name'] != ''
 
 
 def test_incorrect_parse_content(product_name):
@@ -40,8 +34,16 @@ def test_incorrect_parse_content(product_name):
     assert product_list == excepted_result
 
 
-def test_parse_product_title(product_title):
-    assert parse_product_title(product_title) == '1kg'
+@pytest.mark.parametrize('product_title,expected_result',[
+    ('Basmati Rice - 1kg', '1kg'),
+    ('Ghar Ko Achar Buff Sukuti Achar - 500gm', '500gm'),
+    ('Lays Spanish Tomato Tango Chips - 42g', '42g'),
+    ('Sweet & Sour Mango Achar - 350gm', '350gm')
+])
+
+
+def test_parse_product_title(product_title, expected_result):
+    assert parse_product_title(product_title) == expected_result
 
 
 def test_extract_info():

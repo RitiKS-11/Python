@@ -55,8 +55,8 @@ def store_sql(results):
     db.close()
 
 
-def parse_product_title(name):
-    word_list = name.split(' ')
+def parse_product_title(product_title):
+    word_list = product_title.split(' ')
     last_word = word_list[-1]
 
     if any(m in last_word for m in ['gm', 'g', 'kg', 'Gm', 'G']):
