@@ -48,11 +48,8 @@ def test_parse_product_title(product_title, expected_result):
 def test_extract_info(product_name):
     extract_info(product_name)
 
-    for filename in os.listdir():
-        if filename.startswith(f'{product_name}.'):
-            file = filename
-    
-    assert file == f'{product_name}.csv'
+    file = f'{product_name}.csv'
+    assert os.path.isfile(file)
 
     with open(file) as file:
         contents = file.readlines()
@@ -66,11 +63,8 @@ def test_file_is_present(product_name):
                         'price': '50.00', 'product_url': '//www.daraz.com.np'}]
     store_csv(results, product_name)
 
-    for filename in os.listdir():
-        if filename.startswith(f'{product_name}.'):
-            file = filename
-    
-    assert file == f'{product_name}.csv'
+    file = f'{product_name}.csv'
+    assert os.path.isfile(file)
 
 
 def test_file_contains(product_name):
