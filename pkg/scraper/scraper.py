@@ -101,7 +101,6 @@ def extract_info(product):
         results = parse_content(res)
         store_csv(results, product)
 
-        return True
     
     except Exception as error:
         raise error

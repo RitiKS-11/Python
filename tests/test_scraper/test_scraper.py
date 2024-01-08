@@ -2,7 +2,7 @@ import pytest
 import  os
 
 from pkg.scraper.scraper import scrape, parse_product_title, \
-                    parse_content, extract_info
+                    parse_content, extract_info, store_csv
 
 
 @pytest.fixture
@@ -16,12 +16,11 @@ def test_scrape():
 
 
 def test_parse_content(product_name):
-    res = scrape(product_name)
-    filename=f'{product_name}.csv'
-    
+    res = scrape(product_name)    
     results = parse_content(res)
 
-    assert  len(results) != 0
+    assert  len(results) > 30 and len(results) < 50
+    assert list(results[0].keys()) == list(['name', 'price', 'product_url', 'quantity'])
     assert results[0]['name'] != ''
 
 
@@ -46,17 +45,30 @@ def test_parse_product_title(product_title, expected_result):
     assert parse_product_title(product_title) == expected_result
 
 
-def test_extract_info():
-    assert extract_info('rice') == True
+def test_extract_info(product_name):
+    extract_info(product_name)
+
+    for filename in os.listdir():
+        if filename.startswith(f'{product_name}.'):
+            file = filename
+    
+    assert file == f'{product_name}.csv'
+
+    with open(file) as file:
+        contents = file.readlines()
+        file_rows = len(contents)
+
+    assert file_rows > 40  
 
 
 def test_file_is_present(product_name):
-    res = extract_info(product_name)
+    results = [{'name': 'Parle Monaco Classic Regular Biscuits 150g', \
+                        'price': '50.00', 'product_url': '//www.daraz.com.np'}]
+    store_csv(results, product_name)
 
-    if res:
-        for filename in os.listdir():
-            if filename.startswith(f'{product_name}.'):
-                file = filename
+    for filename in os.listdir():
+        if filename.startswith(f'{product_name}.'):
+            file = filename
     
     assert file == f'{product_name}.csv'
 
@@ -75,5 +87,5 @@ if __name__ == "__main__":
     # test_parse_content('rice')
     # test_parse_product_title('Basmati Rice 1kg')
     # test_file_is_present('rice')
-    test_file_contains('fish')
+    test_extract_info('fish')
     
