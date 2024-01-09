@@ -30,7 +30,7 @@ def test_incorrect_parse_content(product_name):
     excepted_result = [{'name': 'Parle Monaco Classic Regular Biscuits 150g', \
                         'price': '50.00', 'product_url': '//www.daraz.com.np'}]
 
-    assert product_list == excepted_result
+    assert product_list != excepted_result
 
 
 @pytest.mark.parametrize('product_title,expected_result',[
