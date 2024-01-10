@@ -1,8 +1,6 @@
-from bs4 import BeautifulSoup
 import requests
 import json
-import csv
-from datetime import datetime
+import csv, os
 
 from pkg.scraper.db import Database
 
@@ -34,7 +32,12 @@ def parse_content(res):
 
 def store_csv(results, product):
     try:
-        with open(f'{product}.csv', 'w') as file:
+        filepath = f'{product}.csv'
+
+        if os.path.isfile(filepath):
+            os.remove(filepath)
+
+        with open(filepath, 'w') as file:
             fieldnames = ['name', 'price', 'product_url', 'quantity']
             writer = csv.DictWriter(file, fieldnames=fieldnames)
             writer.writeheader()
