@@ -46,12 +46,15 @@ def test_parse_product_title(product_title, expected_result):
 
 
 def test_extract_info(product_name):
+    filepath = f'{product_name}.csv'
+
+    if os.path.isfile(filepath):
+        os.remove(filepath)
+
     extract_info(product_name)
+    assert os.path.isfile(filepath)
 
-    file = f'{product_name}.csv'
-    assert os.path.isfile(file)
-
-    with open(file) as file:
+    with open(filepath) as file:
         contents = file.readlines()
         file_rows = len(contents)
 
@@ -61,20 +64,25 @@ def test_extract_info(product_name):
 def test_file_is_present(product_name):
     results = [{'name': 'Parle Monaco Classic Regular Biscuits 150g', \
                         'price': '50.00', 'product_url': '//www.daraz.com.np'}]
+    
+    filepath = f'{product_name}.csv'
+    if os.path.isfile(filepath):
+        os.remove(filepath)
+
     store_csv(results, product_name)
 
-    file = f'{product_name}.csv'
-    assert os.path.isfile(file)
+    assert os.path.isfile(filepath)
 
 
 def test_file_contains(product_name):
     res = extract_info(product_name)
 
     if res:
-        size = os.path.getsize(f'{product_name}.csv')
-
-    assert size != 0
-
+        filepath = f'{product_name}.csv'
+        if os.path.isfile(filepath):
+            os.remove(filepath)
+    
+        assert os.path.getsize(filepath) != 0
 
 if __name__ == "__main__":
     # test_scrape('rice')

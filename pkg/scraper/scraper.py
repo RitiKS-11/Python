@@ -34,9 +34,6 @@ def store_csv(results, product):
     try:
         filepath = f'{product}.csv'
 
-        if os.path.isfile(filepath):
-            os.remove(filepath)
-
         with open(filepath, 'w') as file:
             fieldnames = ['name', 'price', 'product_url', 'quantity']
             writer = csv.DictWriter(file, fieldnames=fieldnames)
